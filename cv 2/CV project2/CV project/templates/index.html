@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vehicle Counter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <main class="shell">
+        <header class="topbar">
+            <div class="location" id="locationName">{{ streams[active_stream]["name"] }}</div>
+            <div class="topbar-actions">
+                <button type="button" class="stop-button" id="stopProgram">Stop Program</button>
+                <div class="count">
+                    <div class="count-number" id="vehicleCount">0</div>
+                    <div class="count-label">VEHICLES COUNTED</div>
+                </div>
+            </div>
+        </header>
+
+        <section class="video-wrap">
+            <div id="videoLoader" class="video-loader" style="display: none;">
+                <div class="spinner"></div>
+                <span>Connecting to Stream...</span>
+            </div>
+            <img id="videoFeed" src="/video_feed" alt="Live processed traffic stream">
+        </section>
+
+        <nav class="locations" aria-label="Stream locations">
+            {% for stream_id, label in button_labels.items() %}
+                <button type="button" data-stream="{{ stream_id }}" class="{% if active_stream == stream_id %}active{% endif %}">
+                    {{ label }}
+                </button>
+            {% endfor %}
+        </nav>
+
+        <section class="game-panel">
+            <div class="game-header">
+                <h3>Guess the Traffic!</h3>
+                <p>How many cars will pass in the next 15 seconds?</p>
+            </div>
+            <div class="game-controls">
+                <input type="number" id="guessInput" min="0" placeholder="Enter your guess...">
+                <button type="button" id="startGameBtn" class="game-button">Start Game</button>
+            </div>
+            <div class="game-status-wrapper">
+                <div class="game-status" id="gameStatus">
+                    Waiting to start...
+                </div>
+                <div class="game-progress-track">
+                    <div id="gameProgress" class="game-progress-bar"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        window.STREAM_NAMES = {
+            {% for stream_id, stream in streams.items() %}
+                "{{ stream_id }}": "{{ stream["name"] }}"{% if not loop.last %},{% endif %}
+            {% endfor %}
+        };
+    </script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
